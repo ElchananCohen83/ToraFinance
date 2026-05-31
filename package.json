@@ -5,9 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:web": "next dev",
+    "dev:api": "npm --prefix apps/api run start:dev",
+    "db:up": "docker compose up -d postgres",
+    "db:migrate": "npm --prefix apps/api run prisma:migrate",
     "build": "next build",
+    "build:api": "npm --prefix apps/api run build",
     "start": "next start",
     "lint": "eslint .",
+    "lint:api": "npm --prefix apps/api run lint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

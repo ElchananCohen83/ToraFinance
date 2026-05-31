@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  FINANCE_MANAGER
+  GABBAI
+  AVRECH
+  DONOR
+}
+
+enum PersonStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  WIDOWED
+  DIVORCED
+}
+
+enum DonorType {
+  INDIVIDUAL
+  BUSINESS
+  FOUNDATION
+}
+
+enum DonationStatus {
+  PLEDGED
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  STANDING_ORDER
+}
+
+enum ScholarshipStatus {
+  DRAFT
+  APPROVED
+  PAID
+  LOCKED
+  REQUIRES_REVIEW
+}
+
+enum DocumentOwnerType {
+  AVRECH
+  DONOR
+  DONATION
+  SCHOLARSHIP
+  USER
+}
+
+enum ReceiptStatus {
+  DRAFT
+  ISSUED
+  SENT
+  CANCELLED
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  displayName  String
+  role         UserRole
+  isBlocked    Boolean      @default(false)
+  avrech       Avrech?
+  donor        Donor?
+  auditLogs    AuditLog[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Avrech {
+  id                  String          @id @default(cuid())
+  userId              String?         @unique
+  user                User?           @relation(fields: [userId], references: [id])
+  firstName           String
+  lastName            String
+  nationalId          String          @unique
+  phone               String?
+  address             String?
+  maritalStatus       MaritalStatus
+  childrenCount       Int             @default(0)
+  joinedAt            DateTime
+  status              PersonStatus    @default(ACTIVE)
+  track               String?
+  profileImageUrl     String?
+  internalNotes       String?
+  scholarships        Scholarship[]
+  attendanceRecords   AttendanceRecord[]
+  documents           Document[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  @@index([status])
+  @@index([track])
+}
+
+model Donor {
+  id                String       @id @default(cuid())
+  userId            String?      @unique
+  user              User?        @relation(fields: [userId], references: [id])
+  fullName          String
+  email             String?
+  phone             String?
+  country           String?
+  city              String?
+  donorType         DonorType    @default(INDIVIDUAL)
+  isRecurring       Boolean      @default(false)
+  preferredLanguage String       @default("he")
+  notes             String?
+  donations         Donation[]
+  documents         Document[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([donorType])
+  @@index([isRecurring])
+}
+
+model Donation {
+  id              String          @id @default(cuid())
+  donorId         String
+  donor           Donor           @relation(fields: [donorId], references: [id])
+  amount          Decimal         @db.Decimal(12, 2)
+  currency        String          @default("ILS")
+  paymentMethod   PaymentMethod
+  status          DonationStatus  @default(PLEDGED)
+  campaign        String?
+  pledgeDueDate   DateTime?
+  paidAt          DateTime?
+  receipt         Receipt?
+  documents       Document[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([status])
+  @@index([paidAt])
+}
+
+model Receipt {
+  id          String        @id @default(cuid())
+  donationId  String        @unique
+  donation    Donation      @relation(fields: [donationId], references: [id])
+  number      String        @unique
+  status      ReceiptStatus @default(DRAFT)
+  issuedAt    DateTime?
+  sentAt      DateTime?
+  fileUrl     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Scholarship {
+  id            String            @id @default(cuid())
+  avrechId      String
+  avrech        Avrech            @relation(fields: [avrechId], references: [id])
+  month         Int
+  year          Int
+  baseAmount    Decimal           @db.Decimal(12, 2)
+  bonusAmount   Decimal           @default(0) @db.Decimal(12, 2)
+  deduction     Decimal           @default(0) @db.Decimal(12, 2)
+  finalAmount   Decimal           @db.Decimal(12, 2)
+  status        ScholarshipStatus @default(DRAFT)
+  paidAt        DateTime?
+  bankBatchId   String?
+  documents     Document[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([avrechId, month, year])
+  @@index([year, month])
+  @@index([status])
+}
+
+model AttendanceRecord {
+  id        String   @id @default(cuid())
+  avrechId  String
+  avrech    Avrech   @relation(fields: [avrechId], references: [id])
+  date      DateTime
+  present   Boolean
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@unique([avrechId, date])
+  @@index([date])
+}
+
+model Document {
+  id              String            @id @default(cuid())
+  ownerType       DocumentOwnerType
+  avrechId        String?
+  avrech          Avrech?           @relation(fields: [avrechId], references: [id])
+  donorId         String?
+  donor           Donor?            @relation(fields: [donorId], references: [id])
+  donationId      String?
+  donation        Donation?         @relation(fields: [donationId], references: [id])
+  scholarshipId   String?
+  scholarship     Scholarship?      @relation(fields: [scholarshipId], references: [id])
+  title           String
+  fileName        String
+  mimeType        String
+  storageKey      String
+  visibleToPortal Boolean           @default(false)
+  expiresAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([ownerType])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
