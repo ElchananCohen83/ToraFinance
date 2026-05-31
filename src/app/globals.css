@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #f7f3ea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(247, 243, 234, 0.92)),
+    #f7f3ea;
+  color: #17201b;
+  font-family:
+    Arial,
+    "Noto Sans Hebrew",
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b9ad99;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eee5d3;
+}
