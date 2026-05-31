@@ -32,11 +32,11 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useEffect, useMemo, useState } from "react";
+import { AppSidebar } from "@/components/app-sidebar";
 import {
   DashboardActionItem,
   DashboardMetric,
   DashboardModuleItem,
-  DashboardNavItem,
   DashboardScholarshipRow,
   DashboardSummary,
   getDashboardSummary
@@ -167,48 +167,6 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   );
 }
 
-function Sidebar({ navItems }: { navItems: DashboardNavItem[] }) {
-  return (
-    <aside className="hidden w-72 shrink-0 border-l border-stone/80 bg-ink px-5 py-6 text-white lg:block">
-      <div className="flex items-center gap-3">
-        <div className="grid h-11 w-11 place-items-center rounded-lg bg-gold text-ink">
-          <Landmark className="h-6 w-6" />
-        </div>
-        <div>
-          <p className="text-lg font-bold">ToraFinance</p>
-          <p className="text-xs text-white/62">ניהול כולל ארגוני</p>
-        </div>
-      </div>
-
-      <nav className="mt-9 space-y-1">
-        {navItems.map((item) => {
-          const Icon = getIcon(item.icon);
-          return (
-            <button
-              key={item.label}
-              className={clsx(
-                "flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold transition",
-                item.active ? "bg-white text-ink" : "text-white/72 hover:bg-white/10 hover:text-white"
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              {item.label}
-            </button>
-          );
-        })}
-      </nav>
-
-      <div className="mt-8 rounded-lg border border-white/14 bg-white/8 p-4">
-        <div className="flex items-center gap-2 text-sm font-semibold">
-          <ShieldCheck className="h-4 w-4 text-gold" />
-          מצב אבטחה
-        </div>
-        <p className="mt-3 text-sm leading-6 text-white/68">RBAC מוכן להרחבה, Swagger פעיל, ו־Audit Log קיים בסכמה.</p>
-      </div>
-    </aside>
-  );
-}
-
 function TasksPanel({ tasks }: { tasks: DashboardActionItem[] }) {
   return (
     <div className="rounded-lg border border-stone/80 bg-white p-5 shadow-soft">
@@ -307,7 +265,7 @@ function DashboardContent({ dashboard }: { dashboard: DashboardSummary }) {
   return (
     <main className="min-h-screen">
       <div className="flex min-h-screen">
-        <Sidebar navItems={dashboard.navItems} />
+        <AppSidebar />
 
         <section className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 border-b border-stone/80 bg-paper/90 px-4 py-4 backdrop-blur md:px-8">

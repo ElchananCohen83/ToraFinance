@@ -126,6 +126,7 @@ model Donor {
   preferredLanguage String       @default("he")
   notes             String?
   donations         Donation[]
+  receipts          Receipt[]
   documents         Document[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
@@ -155,16 +156,28 @@ model Donation {
 }
 
 model Receipt {
-  id          String        @id @default(cuid())
-  donationId  String        @unique
-  donation    Donation      @relation(fields: [donationId], references: [id])
-  number      String        @unique
-  status      ReceiptStatus @default(DRAFT)
-  issuedAt    DateTime?
-  sentAt      DateTime?
-  fileUrl     String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  donationId        String        @unique
+  donation          Donation      @relation(fields: [donationId], references: [id])
+  donorId           String
+  donor             Donor         @relation(fields: [donorId], references: [id])
+  number            String        @unique
+  receiptDate       DateTime      @default(now())
+  amount            Decimal       @default(0) @db.Decimal(12, 2)
+  status            ReceiptStatus @default(DRAFT)
+  accountingSystem  String        @default("UNKNOWN")
+  externalReceiptId String?
+  issuedAt          DateTime?
+  sentAt            DateTime?
+  fileUrl           String?
+  notes             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([donorId])
+  @@index([status])
+  @@index([accountingSystem])
+  @@index([receiptDate])
 }
 
 model Scholarship {
@@ -180,6 +193,7 @@ model Scholarship {
   status        ScholarshipStatus @default(DRAFT)
   paidAt        DateTime?
   bankBatchId   String?
+  notes         String?
   documents     Document[]
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt

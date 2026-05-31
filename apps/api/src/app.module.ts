@@ -5,6 +5,8 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DonationsModule } from "./modules/donations/donations.module";
 import { DonorsModule } from "./modules/donors/donors.module";
 import { HealthModule } from "./modules/health/health.module";
+import { ReceiptsModule } from "./modules/receipts/receipts.module";
+import { ScholarshipsModule } from "./modules/scholarships/scholarships.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
@@ -15,7 +17,9 @@ import { PrismaModule } from "./prisma/prisma.module";
     DashboardModule,
     AvrechimModule,
     DonorsModule,
-    DonationsModule
+    DonationsModule,
+    ReceiptsModule,
+    ScholarshipsModule
   ]
 })
 export class AppModule {}
