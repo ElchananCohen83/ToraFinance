@@ -62,5 +62,35 @@ Use managed PostgreSQL:
 
 - Azure: Azure Database for PostgreSQL Flexible Server
 - AWS: Amazon RDS for PostgreSQL
+- Render/Neon: set `DATABASE_URL` in Render environment variables
 
 Documents and uploaded files should not be stored in PostgreSQL. Store files in Azure Blob Storage or AWS S3, and keep only metadata and storage keys in the `Document` table.
+
+## Render Deployment
+
+The repository includes `render.yaml` at the root. The API service uses `apps/api` as its root directory.
+
+Required Render environment variables:
+
+- `DATABASE_URL`
+- `WEB_ORIGIN`
+
+Build command:
+
+```bash
+npm install && npm run build
+```
+
+Start command:
+
+```bash
+npm run start
+```
+
+Prisma Client is generated in both `postinstall` and `build`, so Render has a generated client before NestJS compiles and before the service starts.
+
+Run database migrations manually from Render Shell or a one-off job when deploying schema changes:
+
+```bash
+npm run prisma:migrate:deploy
+```
