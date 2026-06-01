@@ -229,7 +229,9 @@ model Document {
   scholarship     Scholarship?      @relation(fields: [scholarshipId], references: [id])
   title           String
   fileName        String
+  fileUrl         String?
   mimeType        String
+  size            Int?
   storageKey      String
   visibleToPortal Boolean           @default(false)
   expiresAt       DateTime?

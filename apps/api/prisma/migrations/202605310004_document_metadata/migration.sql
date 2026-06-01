@@ -1,0 +1,3 @@
+ALTER TABLE "Document" ADD COLUMN "fileUrl" TEXT;
+ALTER TABLE "Document" ADD COLUMN "size" INTEGER;
+

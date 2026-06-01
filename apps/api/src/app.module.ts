@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AvrechimModule } from "./modules/avrechim/avrechim.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DonationsModule } from "./modules/donations/donations.module";
+import { DocumentsModule } from "./modules/documents/documents.module";
 import { DonorsModule } from "./modules/donors/donors.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ReceiptsModule } from "./modules/receipts/receipts.module";
@@ -18,6 +19,7 @@ import { PrismaModule } from "./prisma/prisma.module";
     AvrechimModule,
     DonorsModule,
     DonationsModule,
+    DocumentsModule,
     ReceiptsModule,
     ScholarshipsModule
   ]
